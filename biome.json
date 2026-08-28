@@ -1,0 +1,99 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.10/schema.json",
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"includes": [
+			"src/**/*.ts",
+			"test/**/*.ts",
+			"!**/*.min.js",
+			"!bin",
+			"!dist",
+			"!**/node_modules"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "recommended",
+			"correctness": {
+				"noConstantCondition": "error",
+				"noConstructorReturn": "error",
+				"noEmptyPattern": "error",
+				"noInvalidConstructorSuper": "error",
+				"noSetterReturn": "error",
+				"noStringCaseMismatch": "error",
+				"noUnreachable": "error",
+				"noUnreachableSuper": "error",
+				"noUnusedVariables": "warn",
+				"useIsNan": "error"
+			},
+			"complexity": {
+				"noExtraBooleanCast": "warn",
+				"noFlatMapIdentity": "warn",
+				"noThisInStatic": "warn",
+				"noUselessConstructor": "warn",
+				"noEmptyTypeParameters": "warn",
+				"noUselessSwitchCase": "warn",
+				"useFlatMap": "warn",
+				"useOptionalChain": "warn",
+				"useDateNow": "warn",
+				"noArguments": "error",
+				"noBannedTypes": "warn"
+			},
+			"suspicious": {
+				"noDebugger": "error",
+				"noAssignInExpressions": "error",
+				"noDuplicateClassMembers": "error",
+				"noDuplicateElseIf": "error",
+				"noExplicitAny": "warn",
+				"noDuplicateCase": "error",
+				"noImplicitAnyLet": "error",
+				"noEmptyBlockStatements": "warn",
+				"noUnassignedVariables": "warn",
+				"useAwait": "warn",
+				"useGetterReturn": "error",
+				"useIsArray": "warn"
+			},
+			"style": {
+				"useArrayLiterals": "warn",
+				"useConst": "warn",
+				"useImportType": "warn",
+				"useNamingConvention": "warn",
+				"useNodejsImportProtocol": "warn",
+				"useNumberNamespace": "warn",
+				"useShorthandFunctionType": "warn",
+				"useTemplate": "warn"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single",
+			"semicolons": "always"
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"json": {
+		"formatter": {
+			"enabled": true,
+			"trailingCommas": "none",
+			"bracketSpacing": true
+		}
+	}
+}
