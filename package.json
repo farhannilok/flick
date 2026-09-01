@@ -1,9 +1,10 @@
 {
   "name": "api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "typeCheck": "tsc --noEmit",
     "dev": "cross-env NODE_ENV=development node --watch src/index.ts",
     "format": "biome format --fix .",
     "lint": "biome lint --fix .",
@@ -22,14 +23,18 @@
   "packageManager": "pnpm@11.24.0",
   "type": "module",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongoose": "^9.9.4"
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.9.4",
+    "mongoose-paginate-v2": "^1.9.5"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.10",
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "cross-env": "^10.1.0",

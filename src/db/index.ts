@@ -1,13 +1,10 @@
 import mongoose from 'mongoose';
-import { DB_NAME } from '../constants/constants.ts';
-
 
 export async function connectDB() {
 	try {
 		await mongoose.connect(process.env.MONGODB_URI as string);
-    console.log('MongoDB connected');
-    console.log(DB_NAME)
+		console.log('🛢 MongoDB connected');
 	} catch (err) {
-		throw err
+		throw err;
 	}
 }
