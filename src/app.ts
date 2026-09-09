@@ -2,6 +2,7 @@ import express, { type Express } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { LIMIT } from './constants/constants.ts';
+import userRouter from './routes/user.routes.ts';
 
 const app: Express = express();
 
@@ -32,5 +33,8 @@ app.use(
 app.use(express.static('public'));
 
 app.use(cookieParser());
+
+// routes
+app.use('/api/v1/users', userRouter);
 
 export { app };
