@@ -32,15 +32,13 @@ export const registerUser = asyncHandler(
 		if (userExist) throw new ApiException(400, 'User already exists');
 
 		// get the avatar and coverImage from the req object file property
-		const avatarUrl = req.file?.path;
-		// const coverImageUrl = req.files?.coverImage[0]?.path;
+		const avatarUrl = req.files?.avatar?.[0]?.path;
+		const coverImageUrl = req.files?.coverImage?.[0]?.path;
 
-		const avatar = avatarUrl ? await uploadOnCloudinary(avatarUrl) : null;
-
-		// const [avatar, coverImage] = await Promise.all([
-		// 	avatarUrl ? uploadOnCloudinary(avatarUrl) : null,
-		// 	coverImageUrl ? uploadOnCloudinary(coverImageUrl) : null,
-		// ]);
+		const [avatar, coverImage] = await Promise.all([
+			uploadOnCloudinary(avatarUrl),
+			uploadOnCloudinary(coverImageUrl),
+		]);
 
 		const createdUser = await User.create({
 			username,
@@ -48,7 +46,7 @@ export const registerUser = asyncHandler(
 			email,
 			password,
 			avatar: avatar?.url ?? null,
-			coverImage: null,
+			coverImage: coverImage?.url ?? null,
 		});
 
 		// a second DB call to check user creation is successful with the _id property
