@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { LIMIT } from './constants/constants.ts';
 import userRouter from './routes/user.routes.ts';
+import { errorHandler } from './middlewares/error.middleware.ts';
 
 const app: Express = express();
 
@@ -36,5 +37,8 @@ app.use(cookieParser());
 
 // routes
 app.use('/api/v1/users', userRouter);
+
+// error handling middleware
+app.use(errorHandler);
 
 export { app };
