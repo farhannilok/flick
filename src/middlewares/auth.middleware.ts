@@ -21,7 +21,6 @@ export const verifyJWT = async (
 		const user = await User.findById(decoded._id).select(
 			'-password -refreshToken -avatar -coverImage -watchHistory',
 		);
-		console.log('USER --> ', user);
 
 		req.user = user;
 		next();

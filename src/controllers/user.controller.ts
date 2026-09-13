@@ -95,7 +95,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 	// user not found then throw error
 	const { username, email, password } = req.body;
 
-	if (!username || !email) {
+	if (!username && !email) {
 		throw new ApiException(400, 'username or email is required');
 	}
 
