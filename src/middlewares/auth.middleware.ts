@@ -22,6 +22,8 @@ export const verifyJWT = async (
 			'-password -refreshToken -avatar -coverImage -watchHistory',
 		);
 
+		if (!user) throw new ApiException(401, 'Failed to identify user');
+
 		req.user = user;
 		next();
 	} catch (err) {
