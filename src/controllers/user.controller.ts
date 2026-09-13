@@ -5,6 +5,7 @@ import { User } from '../models/user.model.ts';
 import { uploadOnCloudinary } from '../utils/cloudinary.ts';
 import { ApiResponse } from '../utils/api.response.ts';
 import { COOKIE_OPTION } from '../constants/constants.ts';
+import jwt from 'jsonwebtoken';
 
 const generateAccessAndRefreshToken = async (user) => {
 	try {
@@ -148,3 +149,49 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
 		.clearCookie('refreshToken', COOKIE_OPTION)
 		.json(new ApiResponse(200, null, 'User logged out successfully'));
 });
+
+export const rotateAccessToken = asyncHandler(
+	async (req: Request, res: Response) => {
+		// get refreshToken from cookie or header
+		// no token found throw error
+		// decode token find the user in DB not found throw error
+		// match the refreshToken of user and DB not match error
+		// genrate new accessToken and refreshToken
+		// send in response as well as in cookie;
+		const incomingRefreshToken =
+			req.cookies?.refreshToken ||
+			req.body?.refreshToken ||
+			req.header('Authorization')?.replace('Bearer ', '');
+
+		if (!incomingRefreshToken)
+			throw new ApiException(401, 'Refresh token is required');
+
+		try {
+			const decoded = jwt.verify(
+				incomingRefreshToken,
+				process.env.REFRESH_TOKEN_SECRET!,
+			);
+
+			const user = await User.findById(decoded._id);
+			if (!user) throw new ApiException(401, 'Invalid refresh token');
+			if (incomingRefreshToken !== user.refreshToken)
+				throw new ApiException(401, 'Refresh token expired or tempered');
+
+			const { accessToken, refreshToken } =
+				await generateAccessAndRefreshToken(user);
+			return res
+				.status(200)
+				.cookie('accessToken', accessToken, COOKIE_OPTION)
+				.cookie('refreshToken', refreshToken, COOKIE_OPTION)
+				.json(
+					new ApiResponse(
+						200,
+						{ accessToken, refreshToken },
+						'Access token rotated successfully',
+					),
+				);
+		} catch (err) {
+			throw new ApiException(401, err?.message ?? 'Internal server error');
+		}
+	},
+);
