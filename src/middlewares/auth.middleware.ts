@@ -19,7 +19,7 @@ export const verifyJWT = async (
 		if (!decoded) throw new ApiException(401, 'Invalid access token');
 
 		const user = await User.findById(decoded._id).select(
-			'-password -refreshToken -avatar -coverImage -watchHistory',
+			'-password -refreshToken',
 		);
 
 		if (!user) throw new ApiException(401, 'Failed to identify user');
