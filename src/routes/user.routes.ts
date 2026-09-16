@@ -3,6 +3,7 @@ import {
 	changeUserCurrentPassword,
 	getCurrentUser,
 	getUserChannelProfile,
+	getUserWatchHistory,
 	loginUser,
 	logoutUser,
 	registerUser,
@@ -37,5 +38,6 @@ router
 	.patch(verifyJWT, upload.single('coverImage'), updateUserAvatar);
 
 router.route('/c/:username').get(verifyJWT, getUserChannelProfile);
+router.route('/watch-history').get(verifyJWT, getUserWatchHistory);
 
 export default router;
