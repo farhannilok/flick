@@ -318,3 +318,74 @@ export const updateUserCoverImage = asyncHandler(
 			);
 	},
 );
+
+export const getUserChannelProfile = asyncHandler(
+	async (req: Request, res: Response) => {
+		const { username } = req.body;
+		if (!username) throw new ApiException(400, 'username is required');
+
+		const channel = await User.aggregate([
+			{
+				$match: {
+					username: username?.toLowerCase(),
+				},
+			},
+			{
+				$lookup: {
+					from: 'subscriptions',
+					localField: '_id',
+					foreignField: 'channel',
+					as: 'subscriber',
+				},
+			},
+			{
+				$lookup: {
+					from: 'subscriptions',
+					localField: '_id',
+					foreignField: 'subscriber',
+					as: 'subscribedTo',
+				},
+			},
+			{
+				$addFields: {
+					subscriberCount: {
+						$size: '$subscriber',
+					},
+					channelsSubscribedToCount: {
+						$size: '$subscribedTo',
+					},
+
+					isSubscribed: {
+						$cond: {
+							if: { $in: [req?.user?._id, '$subscribers.subscriber'] },
+							then: true,
+							else: false,
+						},
+					},
+				},
+			},
+			{
+				$project: {
+					username: 1,
+					email: 1,
+					fullName: 1,
+					subscriberCount: 1,
+					channelsSubscribedToCount: 1,
+					isSubscribed: 1,
+					avatar: 1,
+					coverImage: 1,
+				},
+			},
+		]);
+
+		if (!channel.length) {
+			throw new ApiException(400, 'Channel does not exists');
+		}
+
+		return res
+			.status(200)
+			.json(
+				new ApiResponse(200, channel[0], 'User channel fetched successfully'),
+			);
+	},
+);
