@@ -36,6 +36,6 @@ router
 	.route('/cover-image')
 	.patch(verifyJWT, upload.single('coverImage'), updateUserAvatar);
 
-router.route('/c/:usernam').get(verifyJWT, getUserChannelProfile);
+router.route('/c/:username').get(verifyJWT, getUserChannelProfile);
 
 export default router;
