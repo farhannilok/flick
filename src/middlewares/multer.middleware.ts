@@ -15,10 +15,10 @@ const storage = multer.diskStorage({
 			const fileExtension = path.extname(file.originalname);
 			// get the extenstion from mime type append it with (.) dot notation
 			// const fileExt = file.mimetype.split('/')[1]
-			callback(
-				null,
-				file.fieldname + '-' + raw.toString('hex') + fileExtension,
-			);
+			const fileName =
+				file.fieldname + '-' + raw.toString('hex') + fileExtension;
+			callback(null, fileName);
+			req.fileName = fileName;
 		});
 	},
 });
