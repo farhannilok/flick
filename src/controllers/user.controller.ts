@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import type { Request, Response } from 'express';
 import { asyncHandler } from '../utils/async.handler.ts';
 import { ApiException } from '../exceptions/api.exception.ts';
@@ -7,6 +8,7 @@ import { ApiResponse } from '../utils/api.response.ts';
 import { COOKIE_OPTION } from '../constants/constants.ts';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import path from 'node:path';
 
 const generateAccessAndRefreshToken = async (user) => {
 	try {
@@ -47,7 +49,13 @@ export const registerUser = asyncHandler(
 			$or: [{ email }, { username }],
 		});
 
-		if (userExist) throw new ApiException(400, 'User already exists');
+		if (userExist) {
+			// created absolute file path
+			fs.unlinkSync(
+				path.resolve(process.cwd(), 'public/uploads', req?.fileName),
+			);
+			throw new ApiException(400, 'User already exists');
+		}
 
 		// get the avatar and coverImage from the req object file property
 		const avatarUrl = req.files?.avatar?.[0]?.path;
@@ -391,47 +399,57 @@ export const getUserChannelProfile = asyncHandler(
 	},
 );
 
-export const getUserWatchHistory = asyncHandler(async (req: Request, res: Response) => {
-  const user = await User.aggregate([
-    {
-      $match: new mongoose.Schema.Types.ObjectId(req?.user?._id)
-    },
-    {
-      $lookup: {
-        from: 'videos',
-        localField: "watchHistory",
-        foreignField: "_id",
-        as: "watchHistory",
-        pipeline: [
-          {
-            $lookup: {
-              from: "users",
-              localField: "owner",
-              foreignField: "_id",
-              as: "owner",
-              pipeline: [
-                {
-                  $project: {
-                    username: 1,
-                    fullName: 1,
-                    avatar: 1,
-                    coverImage: 1
-                  }
-                }
-              ]
-            }
-          },
-          {
-            $addFields: {
-              owner: {
-                $first: "$owner"
-              }
-            }
-          }
-        ]
-      }
-    }
-  ]);
+export const getUserWatchHistory = asyncHandler(
+	async (req: Request, res: Response) => {
+		const user = await User.aggregate([
+			{
+				$match: new mongoose.Schema.Types.ObjectId(req?.user?._id),
+			},
+			{
+				$lookup: {
+					from: 'videos',
+					localField: 'watchHistory',
+					foreignField: '_id',
+					as: 'watchHistory',
+					pipeline: [
+						{
+							$lookup: {
+								from: 'users',
+								localField: 'owner',
+								foreignField: '_id',
+								as: 'owner',
+								pipeline: [
+									{
+										$project: {
+											username: 1,
+											fullName: 1,
+											avatar: 1,
+											coverImage: 1,
+										},
+									},
+								],
+							},
+						},
+						{
+							$addFields: {
+								owner: {
+									$first: '$owner',
+								},
+							},
+						},
+					],
+				},
+			},
+		]);
 
-  return res.status(200).json(new ApiResponse(200, user[0]?.watchHistory, "Watch history fetched successfully"));
-})
+		return res
+			.status(200)
+			.json(
+				new ApiResponse(
+					200,
+					user[0]?.watchHistory,
+					'Watch history fetched successfully',
+				),
+			);
+	},
+);
